@@ -18,7 +18,7 @@ class MainCode(QMainWindow):
         self.resize(1700, 900)
         self.setWindowTitle('Графики для Тренажёра')
 
-        self.stages = QStackedLayout()  
+        self.stages = QStackedLayout()
 
         self.main_stage = QWidget()
         self.main_stage.resize(1700, 900)
@@ -36,7 +36,13 @@ class MainCode(QMainWindow):
         self.stages.addWidget(self.settings_stage)
         self.stages.setCurrentIndex(0)
 
-        self.setLayout(self.stages)
+        self.main_widget = QWidget()
+        self.main_widget.setLayout(self.stages)
+
+        self.setCentralWidget(self.main_widget)
+
+
+        #self.setLayout(self.stages)
         #self.main_vbox.addLayout(self.stages)
 
         self.show()
@@ -109,7 +115,10 @@ class MainCode(QMainWindow):
         """constructor graph stage"""
         self.hbox_for_first_graph = QtWidgets.QHBoxLayout()
         self.hbox_for_second_grahp = QtWidgets.QHBoxLayout()
-        self.main_vbox = QtWidgets.QVBoxLayout()
+        self.main_graph_vbox = QtWidgets.QVBoxLayout()
+
+        self.line_color_force_time = 'red'
+        self.line_color_amplitude_time = 'red'
 
         alignment_params_top = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
 
@@ -117,19 +126,19 @@ class MainCode(QMainWindow):
         self.back_to_main_stage.setStyleSheet("font-size:35px;")
         self.back_to_main_stage.setFixedSize(100, 50)
         self.back_to_main_stage.clicked.connect(self.go_to_main_stage)
-        self.main_vbox.addWidget(self.back_to_main_stage, alignment=alignment_params_top)
+        self.main_graph_vbox.addWidget(self.back_to_main_stage, alignment=alignment_params_top)
 
         self.plot_force_time = pg.PlotWidget()
-        self.plot_force_time.showGrid(x = True, y = True)
+        self.plot_force_time.showGrid(x=True, y=True)
         self.hbox_for_first_graph.addWidget(self.plot_force_time)
-        self.main_vbox.addLayout(self.hbox_for_first_graph)
+        self.main_graph_vbox.addLayout(self.hbox_for_first_graph)
 
         self.plot_amplitude_time = pg.PlotWidget()
-        self.plot_amplitude_time.showGrid(x = True, y = True)
+        self.plot_amplitude_time.showGrid(x=True, y=True)
         self.hbox_for_second_grahp.addWidget(self.plot_amplitude_time)
-        self.main_vbox.addLayout(self.hbox_for_second_grahp)
+        self.main_graph_vbox.addLayout(self.hbox_for_second_grahp)
 
-        self.graph_stage.setLayout(self.main_vbox)
+        self.graph_stage.setLayout(self.main_graph_vbox)
 
     def create_settings_stage(self):
         """constructor settings stage"""
@@ -141,7 +150,10 @@ class MainCode(QMainWindow):
         self.vbox_for_amplitude_time_box = QtWidgets.QVBoxLayout()
         self.hbox_for_force_time_box = QtWidgets.QHBoxLayout()
         self.hbox_for_amplitude_time_box = QtWidgets.QHBoxLayout()
-        
+        self.hbox_for_force_time_show_or_no_gragh = QtWidgets.QHBoxLayout()
+        self.hbox_for_amplitude_time_show_or_no_gragh = QtWidgets.QHBoxLayout()
+
+
         alignment_params_top = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
         alignment_params_bottom = QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter
 
@@ -161,11 +173,18 @@ class MainCode(QMainWindow):
         self.force_time_label.setFont(font_obj_for_label)
         self.vbox_for_force_time_box.addWidget(self.force_time_label, alignment=QtCore.Qt.AlignTop)
 
-        self.checkbox_force_time = QtWidgets.QCheckBox('Показывать?', self)
+        self.force_time_show_or_not_label = QtWidgets.QLabel("Показывать?")
+        self.force_time_show_or_not_label.setStyleSheet("font-size:40px;")
+        self.force_time_show_or_not_label.setFont(font_obj_for_label)
+        self.hbox_for_force_time_show_or_no_gragh.addWidget(self.force_time_show_or_not_label, alignment=QtCore.Qt.AlignRight)
+
+        self.checkbox_force_time = QtWidgets.QCheckBox(self)
         self.checkbox_force_time.setStyleSheet("QCheckBox::indicator { width: 50px; height: 50px;}")
         self.checkbox_force_time.resize(100, 100)
+        self.checkbox_force_time.setChecked(True)
+        self.hbox_for_force_time_show_or_no_gragh.addWidget(self.checkbox_force_time)
 
-        self.vbox_for_force_time_box.addWidget(self.checkbox_force_time)
+        self.vbox_for_force_time_box.addLayout(self.hbox_for_force_time_show_or_no_gragh)
 
         self.time_units_show_time_label = QtWidgets.QLabel("Единицы измерения времени")
         self.time_units_show_time_label.setFont(font_obj_for_label)
@@ -179,38 +198,40 @@ class MainCode(QMainWindow):
         self.time_unit_force_time_combobox.setCurrentText('Миллисекуда')
         self.vbox_for_force_time_box.addWidget(self.time_unit_force_time_combobox)
 
-        self.line_color_force_time = QtWidgets.QPushButton('Выбрать цвет линии', self)
-        self.line_color_force_time.setFixedSize(100, 50)
-        self.line_color_force_time.clicked.connect(self.background_color_window)
-        self.vbox_for_force_time_box.addWidget(self.line_color_force_time, alignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+        self.line_color_force_time_btn = QtWidgets.QPushButton('Выбрать цвет линии', self)
+        self.line_color_force_time_btn.setStyleSheet("font-size:30px;")
+        self.line_color_force_time_btn.setFixedSize(300, 100)
+        self.line_color_force_time_btn.clicked.connect(self.background_color_window_force_time)
+        self.vbox_for_force_time_box.addWidget(self.line_color_force_time_btn, alignment=QtCore.Qt.AlignCenter)
 
         self.box_for_force_time_graph.setLayout(self.vbox_for_force_time_box)
 
-        self.vbox_for_hbox_for_force_time_box.addWidget(self.box_for_force_time_graph)#, alignment=QtCore.Qt.AlignJustify)
+        self.vbox_for_hbox_for_force_time_box.addWidget(self.box_for_force_time_graph, alignment=QtCore.Qt.AlignJustify)
         self.hbox_for_groupbox.addLayout(self.vbox_for_hbox_for_force_time_box)
 
         self.hbox_for_groupbox.addSpacing(200)
-        self.vbox_for_correct_display = QtWidgets.QVBoxLayout()
-        self.vbox_for_correct_display.addSpacing(500)
-        self.hbox_for_groupbox.addLayout(self.vbox_for_correct_display)
-
 
         self.amplitude_time_label = QtWidgets.QLabel("График амплитуда-время")
         self.amplitude_time_label.setStyleSheet("font: bold;font-size:70px;")
         self.amplitude_time_label.setFont(font_obj_for_label)
         self.vbox_for_amplitude_time_box.addWidget(self.amplitude_time_label, alignment=QtCore.Qt.AlignTop)
 
-        #self.vbox_for_amplitude_time_box.addSpacing(300)
+        self.amplitude_time_show_or_not_label = QtWidgets.QLabel("Показывать?")
+        self.amplitude_time_show_or_not_label.setStyleSheet("font-size:40px;")
+        self.amplitude_time_show_or_not_label.setFont(font_obj_for_label)
+        self.hbox_for_amplitude_time_show_or_no_gragh.addWidget(self.amplitude_time_show_or_not_label, alignment=QtCore.Qt.AlignRight)
 
-        self.checkbox_amplitude_time = QtWidgets.QCheckBox('Показывать?', self)
+        self.checkbox_amplitude_time = QtWidgets.QCheckBox(self)
         self.checkbox_amplitude_time.setStyleSheet("QCheckBox::indicator { width: 50px; height: 50px;}")
         self.checkbox_amplitude_time.resize(100, 100)
+        self.checkbox_amplitude_time.setChecked(True)
+        self.hbox_for_amplitude_time_show_or_no_gragh.addWidget(self.checkbox_amplitude_time)
 
-        self.vbox_for_amplitude_time_box.addWidget(self.checkbox_amplitude_time)
+        self.vbox_for_amplitude_time_box.addLayout(self.hbox_for_amplitude_time_show_or_no_gragh)
 
         self.time_units_show_time_label = QtWidgets.QLabel("Единицы измерения времени")
         self.time_units_show_time_label.setFont(font_obj_for_label)
-        self.vbox_for_amplitude_time_box.addWidget(self.time_units_show_time_label),# alignment=QtCore.Qt.AlignJustify)
+        self.vbox_for_amplitude_time_box.addWidget(self.time_units_show_time_label)
 
         self.time_unit_amplitude_time_combobox = QtWidgets.QComboBox()
         self.time_unit_amplitude_time_combobox.setStyleSheet("font: bold;font-size:40px;")
@@ -222,7 +243,7 @@ class MainCode(QMainWindow):
 
         self.amplitude_units_show_time_label = QtWidgets.QLabel("Единицы измерения амплитуды")
         self.amplitude_units_show_time_label.setFont(font_obj_for_label)
-        self.vbox_for_amplitude_time_box.addWidget(self.amplitude_units_show_time_label)#, alignment=QtCore.Qt.AlignJustify)
+        self.vbox_for_amplitude_time_box.addWidget(self.amplitude_units_show_time_label)
 
         self.amplitude_unit_amplitude_time_combobox = QtWidgets.QComboBox()
         self.amplitude_unit_amplitude_time_combobox.setStyleSheet("font: bold;font-size:40px;")
@@ -232,16 +253,15 @@ class MainCode(QMainWindow):
         self.amplitude_unit_amplitude_time_combobox.setCurrentText('Метр')
         self.vbox_for_amplitude_time_box.addWidget(self.amplitude_unit_amplitude_time_combobox)
 
-        self.line_color_amplitude_time = QtWidgets.QPushButton('Выбрать цвет линии', self)
-        self.line_color_amplitude_time.setFixedSize(100, 50)
-        self.line_color_amplitude_time.clicked.connect(self.background_color_window)
-        self.vbox_for_amplitude_time_box.addWidget(self.line_color_amplitude_time, alignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+        self.line_color_amplitude_time_btn = QtWidgets.QPushButton('Выбрать цвет линии', self)
+        self.line_color_amplitude_time_btn.setStyleSheet("font-size:30px;")
+        self.line_color_amplitude_time_btn.setFixedSize(300, 100)
+        self.line_color_amplitude_time_btn.clicked.connect(self.background_color_window_amplitude_time)
+        self.vbox_for_amplitude_time_box.addWidget(self.line_color_amplitude_time_btn, alignment=QtCore.Qt.AlignCenter)
 
         self.box_for_amplitude_time_graph.setLayout(self.vbox_for_amplitude_time_box)
 
-        #self.vbox_for_hbox_for_amplitude_time_box.addWidget(self.box_for_amplitude_time_graph, alignment=QtCore.Qt.AlignJustify)
-        #self.hbox_for_groupbox.addLayout(self.vbox_for_hbox_for_amplitude_time_box)
-        self.hbox_for_groupbox.addWidget(self.box_for_amplitude_time_graph, alignment = QtCore.Qt.AlignTop )#| QtCore.Qt.AlignJustify)
+        self.hbox_for_groupbox.addWidget(self.box_for_amplitude_time_graph, alignment=QtCore.Qt.AlignJustify)
 
         self.main_vbox.addLayout(self.hbox_for_groupbox)
 
@@ -266,14 +286,17 @@ class MainCode(QMainWindow):
         self.ser.read()
         self.ser.read_until()
 
-    def background_color_window(self):
+    def background_color_window_force_time(self):
         """creata window to choose color"""
-        background_color = QtWidgets.QColorDialog.getColor(parent = self, title = 'Выбор цвета фона')
+        background_color = QtWidgets.QColorDialog.getColor(parent=self, title='Выбор цвета фона')
         if background_color.isValid():
-            palette = self.palette()
-            palette.setColor(QtGui.QPalette.Normal, QtGui.QPalette.Background, background_color)
-            palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Background, background_color)
-            self.setPalette(palette)
+            self.line_color_force_time = background_color
+
+    def background_color_window_amplitude_time(self):
+        """creata window to choose color"""
+        background_color = QtWidgets.QColorDialog.getColor(parent=self, title='Выбор цвета фона')
+        if background_color.isValid():
+            self.line_color_amplitude_time = background_color
 
     def find_and_put_com_port_in_combobox(self):
         """ Lists serial port names
@@ -311,9 +334,14 @@ class MainCode(QMainWindow):
 
     def go_to_graph_stage(self):
         """set graph stage"""
+
+
+        a = [1, 1, 2, 3, 5, 8, 13]
+        b = [2, 3, 5, 8, 13, 21, 34]
+        self.plot_force_time.plot(a, b, pen=self.line_color_force_time)
+        
+        
         self.stages.setCurrentIndex(1)
-
-
 
     def go_to_setting_stage(self):
         """set setting stage"""
