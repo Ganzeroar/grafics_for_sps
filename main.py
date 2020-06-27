@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QStackedLayout
 import pyqtgraph as pg
 
 class MainCode(QMainWindow):
-    """MainCode of this program"""
+    """MainCode of program"""
     def __init__(self, parent=None):
         super(MainCode, self).__init__(parent)
 
